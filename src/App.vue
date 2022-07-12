@@ -3,17 +3,22 @@
     <!-- 路由的出口 -->
     <router-view />
     <h1>黑马头条</h1>
+    <div>
+      <i class="toutiao toutiao-zuojiantou"></i>
+    </div>
+    <van-button type="primary">主要按钮</van-button>
+    <van-button type="info">信息按钮</van-button>
+    <van-button type="default">默认按钮</van-button>
+    <van-button type="warning">警告按钮</van-button>
+    <van-button type="danger">危险按钮</van-button>
   </div>
 </template>
 
 <style scoped>
-export default{
+export default {
   /* 起组件名 */
-  name:'APP',
-
-
+  name: 'APP';
 }
-
 </style>
 
 <style lang="less"></style>

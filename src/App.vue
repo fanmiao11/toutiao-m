@@ -1,31 +1,25 @@
 <template>
   <div id="app">
-    <!-- 路由的出口 -->
-    <h1>黑马头条</h1>
-    <div>
-      <i class="toutiao toutiao-zuojiantou"></i>
-    </div>
-    <van-button type="primary">主要按钮</van-button>
-    <van-button type="info">信息按钮</van-button>
-    <van-button type="default">默认按钮</van-button>
-    <van-button type="warning">警告按钮</van-button>
-    <van-button type="danger">危险按钮</van-button>
-    <div class="bt"></div>
+    <!-- 一级路由的出口 -->
+    <router-view></router-view>
   </div>
 </template>
 
-<style scoped>
+<script>
+import request from '@/utils/request.js'
 export default {
   /* 起组件名 */
-  name: 'APP';
+  data () {
+    return {}
+  },
+  created () {
+    console.dir(request)
+  }
 }
-</style>
 
-<style lang="less">
-.bt {
-  width: 694px;
-  height: 88px;
-  background-color: #6db4fb;
-  border-radius : 10px;
-}
+</script>
+
+
+<style scoped>
+
 </style>

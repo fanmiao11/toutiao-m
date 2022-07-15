@@ -6,14 +6,14 @@
 </template>
 
 <script>
-import request from '@/utils/request.js'
+// import request from '@/utils/request.js'
 export default {
   /* 起组件名 */
   data () {
     return {}
   },
   created () {
-    console.dir(request)
+    // console.dir(request)
   }
 }
 

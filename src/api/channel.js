@@ -28,18 +28,18 @@ export const delMyChannel = (target) => {
   })
 }
 
-// 添加频道
+/**
+ * 添加我的频道
+ * @param {Number} id 频道的id
+ * @param {Number} seq 添加频道的索引下标
+ * @returns
+ */
 export const addMyChannel = (id, seq) => {
   return request({
     url: '/v1_0/user/channels',
     method: 'PATCH',
     data: {
-      channels: [
-        {
-          id,
-          seq
-        }
-      ]
+      channels: [{ id, seq }]
     }
   })
 }

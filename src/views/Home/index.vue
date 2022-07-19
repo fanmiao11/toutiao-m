@@ -3,15 +3,17 @@
     <!-- 头部导航 -->
     <van-nav-bar class="navbar">
       <template #title>
-        <van-button round>
+        <van-button round @click="$router.push('/search')">
           <van-icon name="search" />
           搜索
         </van-button>
       </template>
     </van-nav-bar>
+
     <!-- tabs 选项卡 -->
     <van-tabs v-model="active" swipeable>
       <van-tab v-for="item in myChannels" :key="item.id" :title="item.name">
+      <!-- 文章列表 -->
         <ArticleList :id="item.id"></ArticleList>
       </van-tab>
 
@@ -27,10 +29,12 @@
       @change-active="changeActive"
       @add-mychannel="addMyChannel"
     ></EditChannelPopupVue>
+
   </div>
 </template>
 
 <script>
+// 引入api
 import {
   getMyChannels,
   getMyChannelsByLocal,
@@ -38,15 +42,17 @@ import {
   delMyChannel,
   addMyChannel
 } from '@/api'
+// 引入组件
 import ArticleList from './component/ArticleList.vue'
 import EditChannelPopupVue from './component/EditChannelPopup.vue'
 
 export default {
+  name: 'Home',
   data () {
     return {
       active: 0,
-      myChannels: getMyChannelsByLocal() || []
-      // isShow: true
+      myChannels: []
+      // isShow: false
     }
   },
   components: {
@@ -82,29 +88,34 @@ export default {
         this.$toast.fail('请重新获取频道列表')
       }
     },
+    // 展示弹层
     showPopup () {
       // console.log(111);
       // this.isShow=true;
       this.$refs.popup.isShow = true
     },
+    // 删除我的频道
     async delMychannel (id) {
       this.myChannels = this.myChannels.filter((item) => item.id !== id)
       // 如果是离线状态 数据存在本地
       if (!this.isLogin) {
         setMyChannelsToLocal(this.myChannels)
       } else {
+        // 如果是登录状态 发送接口 删除频道
         try {
           await delMyChannel(id)
         } catch (e) {
-          this.$toast.fail('删除用户频道失败')
+          return this.$toast.fail('删除用户频道失败')
         }
       }
       this.$toast.success('删除用户数据成功')
     },
+    // 更改频道的active
     changeActive (index) {
       this.active = index
     },
     async addMyChannel (channel) {
+      // 添加频道
       this.myChannels.push(channel)
       // 如果是离线状态 数据存在本地
       if (!this.isLogin) {
@@ -113,7 +124,7 @@ export default {
         // 登录状态 发送接口 添加频道
         try {
           await addMyChannel(channel.id, this.myChannels.length)
-          console.log(this.myChannels.length)
+          // console.log(this.myChannels.length)
         } catch (e) {
           return this.$toast.fail('添加频道失败')
         }
@@ -121,6 +132,7 @@ export default {
       this.$toast.success('添加频道成功')
     }
   },
+  // 加载频道数据
   created () {
     this.getMyChannels()
   }
@@ -149,7 +161,6 @@ export default {
     border: 0.02667rem solid #5babfb;
   }
 }
-
 //tabs选项卡
 :deep(.van-tabs__wrap) {
   padding-right: 66px;

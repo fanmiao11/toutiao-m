@@ -5,12 +5,14 @@
       v-if="articleInfo.cover.type === 0"
       :title="articleInfo.title"
       :label="articleDesc"
+      @click="toArticleDetail"
     />
     <!-- 一张图片 -->
     <van-cell
       v-if="articleInfo.cover.type === 1"
       :title="articleInfo.title"
       :label="articleDesc"
+      @click="toArticleDetail"
     >
       <!-- 默认插槽 -->
       <van-image
@@ -20,12 +22,16 @@
       />
     </van-cell>
     <!-- 三张图片 -->
-    <van-cell v-if="articleInfo.cover.type === 3" :title="articleInfo.title">
+    <van-cell
+      v-if="articleInfo.cover.type === 3"
+      :title="articleInfo.title"
+      @click="toArticleDetail"
+    >
       <template #label>
         <!-- 图片 -->
         <div>
           <van-image
-            v-for="(item,index) in articleInfo.cover.images"
+            v-for="(item, index) in articleInfo.cover.images"
             :key="index"
             width="2.8rem"
             height="2rem"
@@ -53,6 +59,13 @@ export default {
     articleDesc () {
       const time = dayjs(this.articleInfo.pubdate).fromNow()
       return `${this.articleInfo.aut_name} ${this.articleInfo.comm_count}评论 ${time}`
+    }
+  },
+  methods: {
+    // 点击跳转到新闻详情
+    toArticleDetail () {
+      // console.log(111)
+      this.$router.push('/detail')
     }
   }
 }

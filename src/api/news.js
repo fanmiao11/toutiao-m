@@ -16,3 +16,9 @@ export const getAriticleList = (id, timestamp) => {
     }
   })
 }
+
+export const getArticleDetail = (articleId) => {
+  return request({
+    url: `/v1_0/articles/${articleId}`
+  })
+}

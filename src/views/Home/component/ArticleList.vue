@@ -56,7 +56,7 @@ export default {
         } = await getAriticleList(this.id, +new Date())
         // console.log(new Date()); //Mon Jul 18 2022 09:24:33 GMT+0800 (中国标准时间)
         // console.log(+new Date()); //1658107473066
-        console.log(data)
+        // console.log(data)
         this.articles = data.results
         // 保存第一页
         this.pre_timestamp = data.pre_timestamp
@@ -115,6 +115,7 @@ export default {
       this.loading = true
       this.loadNext()
     }
+
   }
 }
 </script>

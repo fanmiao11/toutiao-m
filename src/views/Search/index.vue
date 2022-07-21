@@ -9,13 +9,14 @@
         @search="onSearch"
         @focus="visibleSearchSuggestion"
         @cancel="backToPrePage"
+
       />
     </form>
     <!-- 搜索结果/历史/建议 -->
     <!-- <SearchHistory></SearchHistory>
     <SearchResult></SearchResult>
     <SearchSuggestion></SearchSuggestion> -->
-    <component :is="componentName" :keywords="keywords"></component>
+    <component :is="componentName" :keywords="keywords" @clicksuggestionitem="clickSuggestionItem"></component>
   </div>
 </template>
 
@@ -43,6 +44,7 @@ export default {
         return 'SearchHistory'
       }
       if (this.isShowResult) {
+        this.$store.commit('setSearchHistory', this.keywords)
         return 'SearchResult'
       }
       return 'SearchSuggestion'
@@ -60,7 +62,12 @@ export default {
     visibleSearchSuggestion () {
       // console.log(222);
       this.isShowResult = false
+    },
+    clickSuggestionItem (value) {
+      this.isShowResult = true
+      this.keywords = value
     }
+
   }
 }
 </script>

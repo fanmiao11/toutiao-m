@@ -3,3 +3,4 @@
 // 2、按需暴露
 // 3、不会暴露默认导出
 export * from '@/utils/auth'
+export * from '@/utils/searchhistory'

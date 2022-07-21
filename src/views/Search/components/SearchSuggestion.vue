@@ -3,8 +3,8 @@
     <van-cell
       v-for="(item, index) in highlightData"
       :key="index"
-      :title="item"
       icon="search"
+      @click="clickSuggestionItem(item)"
     >
       <template #title>
         <span v-html="item"></span>
@@ -44,7 +44,7 @@ export default {
       try {
         const res = await getSearchSuggestion(this.keywords)
         // console.log(res);
-        console.log(res.data.data.options)
+        // console.log(res.data.data.options)
         this.searchSuggestionList = res.data.data.options.filter(Boolean)
         if (this.searchSuggestionList.length === 0) {
           this.$toast.fail('没有搜索建议')
@@ -53,6 +53,14 @@ export default {
       } catch (e) {
         console.log(e)
       }
+    },
+    clickSuggestionItem (value) {
+      // console.log(value)
+      const reg = new RegExp(/<span style="color:red">|<\/span>/, 'ig')
+      this.$emit(
+        'clicksuggestionitem',
+        value.replace(reg, () => '')
+      )
     }
   },
   computed: {

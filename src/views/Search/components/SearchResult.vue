@@ -48,7 +48,7 @@ export default {
           q: this.keywords,
           page: this.page
         })
-        console.log(data)
+        // console.log(data)
         this.searchResultList = data.results
         // this.searchSuggestionList = res.data.data.options.filter(Boolean)
         if (this.searchResultList.length === 0) {

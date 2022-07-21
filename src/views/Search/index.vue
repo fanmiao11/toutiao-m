@@ -65,4 +65,11 @@ export default {
 }
 </script>
 
-<style></style>
+<style lang="less" scoped>
+.van-search{
+  background: #3296fa;
+  .van-search__action{
+    color: #fff;
+  }
+}
+</style>

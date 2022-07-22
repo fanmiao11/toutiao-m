@@ -26,8 +26,8 @@
         </van-cell>
       </div>
       <!-- 文章内容 -->
-
       <div
+      id="article-content"
         class="article-content markdown-body"
         v-html="articleDetail.content"
       ></div>
@@ -105,6 +105,7 @@ import {
 } from '@/api'
 import dayjs from '@/utils/dayjs'
 import commItem from './components/commItem.vue'
+import { ImagePreview } from 'vant'
 
 export default {
   components: {
@@ -130,7 +131,9 @@ export default {
       isFollowed: false, // 是否关注了该作者
       isCollected: false, // 是否收藏了该文章
       attitude: -1, // 用户对文章的态度 -1无态度 0不喜欢 1点赞
-      aut_id: '' // 文章作者id
+      aut_id: '', // 文章作者id
+
+      imgList: []
     }
   },
 
@@ -151,7 +154,7 @@ export default {
       const {
         data: { data }
       } = await getArticleDetail(this.currentArticleId)
-      console.log(data)
+      // console.log(data)
       this.articleDetail = data
       // 处理显示文章发布时间
       this.articleDetail.pubdate = dayjs(this.articleDetail.pubdate).fromNow()
@@ -163,9 +166,29 @@ export default {
       this.attitude = this.articleDetail.attitude
       // 作者id
       this.aut_id = this.articleDetail.aut_id
+
+      this.$nextTick(() => {
+        this.imgList = document.getElementById('article-content').querySelectorAll('img')
+        const imgSrc = []
+        this.imgList.forEach((item, index) => {
+          imgSrc.push(item.src)
+          item.onclick = () => {
+            ImagePreview({ images: imgSrc, startPosition: index, closeable: true })
+          }
+        })
+      })
     } catch (error) {
       console.log(error.message)
     }
+  },
+  mounted () {
+    const imgSrc = []
+    this.imgList.forEach((item) => {
+      imgSrc.push(item.src)
+      item.onclick = () => {
+        ImagePreview(imgSrc)
+      }
+    })
   },
 
   methods: {

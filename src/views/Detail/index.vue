@@ -93,7 +93,7 @@
 </template>
 
 <script>
-import { getArticleDetail, getComment, followUser, delfollowUser } from '@/api'
+import { getArticleDetail, getComment, followUser, delfollowUser, likings, nolikings } from '@/api'
 import dayjs from '@/utils/dayjs'
 import commItem from './components/commItem.vue'
 
@@ -212,10 +212,12 @@ export default {
       this.isCollected = !this.isCollected
     },
     // 给文章点赞
-    clickGood () {
+    async clickGood () {
       if (this.attitude !== 1) {
+        await likings(this.currentArticleId)
         this.attitude = 1
       } else {
+        await nolikings(this.currentArticleId)
         this.attitude = -1
       }
     }

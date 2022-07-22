@@ -22,3 +22,21 @@ export const getArticleDetail = (articleId) => {
     url: `/v1_0/articles/${articleId}`
   })
 }
+
+// 文章点赞
+export const likings = (target) => {
+  return request({
+    url: '/v1_0/article/likings',
+    method: 'POST',
+    data: {
+      target
+    }
+  })
+}
+// 取消文章点赞
+export const nolikings = (target) => {
+  return request({
+    url: `/v1_0/article/likings/${target}`,
+    method: 'DELETE'
+  })
+}

@@ -40,3 +40,21 @@ export const nolikings = (target) => {
     method: 'DELETE'
   })
 }
+
+// 文章收藏
+export const collections = (target) => {
+  return request({
+    url: '/v1_0/article/collections',
+    method: 'POST',
+    data: {
+      target
+    }
+  })
+}
+// 取消文章收藏
+export const delcollections = (target) => {
+  return request({
+    url: `/v1_0/article/collections/${target}`,
+    method: 'DELETE'
+  })
+}

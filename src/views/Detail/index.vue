@@ -93,7 +93,16 @@
 </template>
 
 <script>
-import { getArticleDetail, getComment, followUser, delfollowUser, likings, nolikings } from '@/api'
+import {
+  getArticleDetail,
+  getComment,
+  followUser,
+  delfollowUser,
+  likings,
+  nolikings,
+  collections,
+  delcollections
+} from '@/api'
 import dayjs from '@/utils/dayjs'
 import commItem from './components/commItem.vue'
 
@@ -170,12 +179,15 @@ export default {
       try {
         if (!this.isFollowed) {
           await followUser(this.aut_id)
+          this.$toast.success('关注成功')
         } else {
           await delfollowUser(this.aut_id)
+          this.$toast('已取关')
         }
         this.isFollowed = !this.isFollowed
       } catch (e) {
         console.log(e.message)
+        this.$toast.fail('操作失败')
       }
     },
     // 加载评论
@@ -208,17 +220,34 @@ export default {
     // 发布评论
     publishFn () {},
     // 收藏文章
-    clickStar () {
-      this.isCollected = !this.isCollected
+    async clickStar () {
+      try {
+        if (!this.isCollected) {
+          await collections(this.currentArticleId)
+          this.$toast.success('文章收藏成功')
+        } else {
+          await delcollections(this.currentArticleId)
+          this.$toast('已取消收藏文章')
+        }
+        this.isCollected = !this.isCollected
+      } catch (e) {
+        console.log(e)
+        this.$toast.fail('操作失败')
+      }
     },
     // 给文章点赞
     async clickGood () {
-      if (this.attitude !== 1) {
-        await likings(this.currentArticleId)
-        this.attitude = 1
-      } else {
-        await nolikings(this.currentArticleId)
-        this.attitude = -1
+      try {
+        if (this.attitude !== 1) {
+          await likings(this.currentArticleId)
+          this.attitude = 1
+        } else {
+          await nolikings(this.currentArticleId)
+          this.attitude = -1
+        }
+      } catch (e) {
+        console.log(e.message)
+        this.$toast.fail('操作失败')
       }
     }
   }

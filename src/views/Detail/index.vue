@@ -16,7 +16,12 @@
           </template>
           <!-- 使用 right-icon 插槽来自定义右侧图标 -->
           <template #right-icon>
-            <van-button icon="plus" round type="info">关注</van-button>
+            <van-button round type="info" @click="isFollow">
+              <template #icon v-if="!isFollowed">
+                <van-icon name="plus"></van-icon>
+              </template>
+              {{ isFollowed ? '取关' : '关注' }}
+            </van-button>
           </template>
         </van-cell>
       </div>
@@ -37,12 +42,11 @@
         :error.sync="error"
         error-text="请求失败，点击重新加载"
       >
-      <commItem
-      v-for="item in commList"
-      :key="item.com_id"
-      :comm="item"
-      ></commItem>
-
+        <commItem
+          v-for="item in commList"
+          :key="item.com_id"
+          :comm="item"
+        ></commItem>
       </van-list>
 
       <!-- 底部栏 -->
@@ -65,8 +69,23 @@
           </div>
         </van-popup>
         <van-icon name="comment-o" :badge="articleDetail.comm_count" />
-        <van-icon name="star-o" />
-        <van-icon name="good-job-o" :badge="articleDetail.like_count" />
+        <div @click="clickStar">
+          <van-icon name="star" color="#f5de19" v-if="isCollected" />
+          <van-icon name="star-o" v-else />
+        </div>
+        <div @click="clickGood">
+          <van-icon
+            name="good-job"
+            v-if="attitude === 1"
+            color="#f5de19"
+            :badge="articleDetail.like_count"
+          />
+          <van-icon
+            name="good-job-o"
+            v-else
+            :badge="articleDetail.like_count"
+          />
+        </div>
         <van-icon name="share" />
       </div>
     </div>
@@ -97,7 +116,11 @@ export default {
       comm: '', // 写评论中的评论内容
 
       offset: '', // 当前页评论的last_id
-      end_id: '' // 所有评论数据的最后一个id
+      end_id: '', // 所有评论数据的最后一个id
+
+      isFollowed: false, // 是否关注了该作者
+      isCollected: false, // 是否收藏了该文章
+      attitude: -1 // 用户对文章的态度 -1无态度 0不喜欢 1点赞
     }
   },
 
@@ -122,30 +145,12 @@ export default {
       this.articleDetail = data
       // 处理显示文章发布时间
       this.articleDetail.pubdate = dayjs(this.articleDetail.pubdate).fromNow()
-
-      // 第一次请求文章评论
-      // await this.getCommentList()
-      // console.log('commList', this.commList)
-
-      // 请求文章评论
-      // const res = await getComment({
-      //   type: 'a', //评论类型 文章
-      //   source: this.currentArticleId, //文章id
-      //   offset: this.offset,
-      //   limit: 10
-      // })
-      // // console.log(data)
-      // // 更新offset
-      // this.offset = res.data.data.last_id || ''
-      // // 存储最后一条评论id
-      // this.end_id = res.data.data.end_id || ''
-      // // 加载到的评论数据追加到commList数组中
-      // this.commList.push(...res.data.data.results.filter(() => Boolean))
-      // console.log(res.data.data)
-      // console.log(this.commList)
-      // if (res.data.data.end_id === res.data.data.last_id) {
-      //   this.finished = true
-      // }
+      // 是否关注了该作者
+      this.isFollowed = this.articleDetail.is_followed
+      // 是否收藏了该文章
+      this.isCollected = this.articleDetail.is_collected
+      // 用户对文章的态度
+      this.attitude = this.articleDetail.attitude
     } catch (error) {
       console.log(error.message)
     }
@@ -155,8 +160,13 @@ export default {
     backPrePage () {
       this.$router.back()
     },
-
-    // 加载下一页评论
+    // 关注作者
+    isFollow () {
+      this.isFollowed = !this.isFollowed
+      // if(!isFollowed)  +关注
+      // if(isFollowed)  取消关注
+    },
+    // 加载评论
     async commOnLoad () {
       try {
         const res = await getComment({
@@ -184,7 +194,19 @@ export default {
       }
     },
     // 发布评论
-    publishFn () {}
+    publishFn () {},
+    // 收藏文章
+    clickStar () {
+      this.isCollected = !this.isCollected
+    },
+    // 给文章点赞
+    clickGood () {
+      if (this.attitude !== 1) {
+        this.attitude = 1
+      } else {
+        this.attitude = -1
+      }
+    }
   }
 }
 </script>

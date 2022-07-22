@@ -1,15 +1,310 @@
 <template>
   <div>
-    黑马头条
+    <van-nav-bar title="黑马头条" left-arrow @click-left="backPrePage" fixed />
+    <div class="article-detail">
+      <h1 class="article-title">{{ articleDetail.title }}</h1>
+      <div class="user-info">
+        <!-- 作者信息 -->
+        <van-cell :icon="articleDetail.aut_photo">
+          <template #title>
+            <div class="user-name">
+              {{ articleDetail.aut_name }}
+            </div>
+            <div class="publish-date">
+              {{ articleDetail.pubdate }}
+            </div>
+          </template>
+          <!-- 使用 right-icon 插槽来自定义右侧图标 -->
+          <template #right-icon>
+            <van-button icon="plus" round type="info">关注</van-button>
+          </template>
+        </van-cell>
+      </div>
+      <!-- 文章内容 -->
+
+      <div
+        class="article-content markdown-body"
+        v-html="articleDetail.content"
+      ></div>
+      <!-- 正文结束 -->
+      <van-divider>正文结束</van-divider>
+      <!-- 评论 -->
+      <van-list
+        v-model="loading"
+        :finished="finished"
+        finished-text="没有更多了"
+        @load="commOnLoad"
+        :error.sync="error"
+        error-text="请求失败，点击重新加载"
+      >
+      <commItem
+      v-for="item in commList"
+      :key="item.com_id"
+      :comm="item"
+      ></commItem>
+
+      </van-list>
+
+      <!-- 底部栏 -->
+      <div class="article-bottom">
+        <van-button round size="mini" @click="show = true">写评论</van-button>
+        <van-popup v-model="show" position="bottom">
+          <van-field
+            v-model="comm"
+            rows="2"
+            autosize
+            type="textarea"
+            maxlength="50"
+            placeholder="请输入留言"
+            show-word-limit
+          />
+          <div class="publish">
+            <van-button :disabled="isDisabled" @click="publishFn"
+              >发布</van-button
+            >
+          </div>
+        </van-popup>
+        <van-icon name="comment-o" :badge="articleDetail.comm_count" />
+        <van-icon name="star-o" />
+        <van-icon name="good-job-o" :badge="articleDetail.like_count" />
+        <van-icon name="share" />
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-export default {
+import { getArticleDetail, getComment } from '@/api'
+import dayjs from '@/utils/dayjs'
+import commItem from './components/commItem.vue'
 
+export default {
+  components: {
+    commItem
+  },
+  data () {
+    return {
+      currentArticleId: this.$store.state.currentArticleId, // 当前文章的id
+      articleDetail: {}, // 文章详情
+
+      loading: false, // 触发评论加载事件
+      finished: false, // 数据是否加载结束
+      error: false, // 加载评论失败
+
+      commList: [], // 对文章的评论列表
+
+      show: false, // 写评论的弹出框是否弹出
+      comm: '', // 写评论中的评论内容
+
+      offset: '', // 当前页评论的last_id
+      end_id: '' // 所有评论数据的最后一个id
+    }
+  },
+
+  computed: {
+    // 评论发布按钮的禁用状态
+    isDisabled () {
+      if (this.comm.length === 0) {
+        return true
+      } else {
+        return false
+      }
+    }
+  },
+
+  async created () {
+    try {
+      // 请求文章详情的数据
+      const {
+        data: { data }
+      } = await getArticleDetail(this.currentArticleId)
+      // console.log(data)
+      this.articleDetail = data
+      // 处理显示文章发布时间
+      this.articleDetail.pubdate = dayjs(this.articleDetail.pubdate).fromNow()
+
+      // 第一次请求文章评论
+      // await this.getCommentList()
+      // console.log('commList', this.commList)
+
+      // 请求文章评论
+      // const res = await getComment({
+      //   type: 'a', //评论类型 文章
+      //   source: this.currentArticleId, //文章id
+      //   offset: this.offset,
+      //   limit: 10
+      // })
+      // // console.log(data)
+      // // 更新offset
+      // this.offset = res.data.data.last_id || ''
+      // // 存储最后一条评论id
+      // this.end_id = res.data.data.end_id || ''
+      // // 加载到的评论数据追加到commList数组中
+      // this.commList.push(...res.data.data.results.filter(() => Boolean))
+      // console.log(res.data.data)
+      // console.log(this.commList)
+      // if (res.data.data.end_id === res.data.data.last_id) {
+      //   this.finished = true
+      // }
+    } catch (error) {
+      console.log(error.message)
+    }
+  },
+
+  methods: {
+    backPrePage () {
+      this.$router.back()
+    },
+
+    // 加载下一页评论
+    async commOnLoad () {
+      try {
+        const res = await getComment({
+          type: 'a', // 评论类型 文章
+          source: this.currentArticleId, // 文章id
+          offset: this.offset,
+          limit: 10
+        })
+        if (res.data.data.end_id === res.data.data.last_id) {
+          this.finished = true
+        }
+        // 更新offset
+        this.offset = res.data.data.last_id || ''
+        this.commList.push(...res.data.data.results.filter(() => Boolean))
+
+        if (!res.data.data.last_id) {
+          this.finished = true
+        }
+      } catch (e) {
+        console.log(e.message)
+        this.error = true
+      } finally {
+        // 加载状态改为false
+        this.loading = false
+      }
+    },
+    // 发布评论
+    publishFn () {}
+  }
 }
 </script>
 
-<style>
+<style lang="less" scoped>
+/deep/.van-nav-bar {
+  background-color: #3296fa;
+  .van-icon,
+  .van-nav-bar__title {
+    color: #fff;
+  }
+}
+// 文章详情
+.article-detail {
+  margin-top: 98px;
+  margin-bottom: 94px;
+  // 文章标题
+  .article-title {
+    font-size: 0.53333rem;
+    padding: 0.66667rem 0.42667rem;
+    margin: 0;
+    color: #3a3a3a;
+  }
+  .user-info {
+    // 图片
+    .van-cell__left-icon {
+      width: 0.93333rem;
+      height: 0.93333rem;
+      margin-right: 0.22667rem;
+      overflow: hidden;
+      border-radius: 50%;
+      .van-icon__image {
+        width: 100%;
+        height: 100%;
+      }
+    }
+    .van-cell__title {
+      // 作者名
+      .user-name {
+        font-size: 0.32rem;
+        color: #3a3a3a;
+      }
+      // 发布时间
+      .publish-date {
+        font-size: 0.30667rem;
+        color: #b7b7b7;
+      }
+    }
 
+    // 关注按钮
+    .van-button {
+      width: 2.26667rem;
+      height: 0.77333rem;
+      color: white;
+      background: rgb(50, 150, 250);
+      border-color: rgb(50, 150, 250);
+    }
+  }
+  // 文章内容
+  .article-content {
+    padding: 0.73333rem 0.42667rem;
+  }
+
+  // 底部栏
+  .article-bottom {
+    height: 94px;
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+    border-top: 0.01333rem solid #d8d8d8;
+    background-color: #fff;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+
+    // 按钮  3.76re
+    .van-button {
+      width: 3.76rem;
+      font-size: 0.4rem;
+
+      .van-button__content {
+        color: #a7a7a7;
+      }
+    }
+    /deep/.van-popup {
+      padding: 0.42667rem 0 0.42667rem 0.42667rem;
+      display: flex;
+      align-items: center;
+      .van-cell {
+        padding: unset;
+      }
+      .van-field__value {
+        background-color: #f5f7f9;
+        padding: 0.26667rem 0.42667rem;
+      }
+      // 发布按钮
+      .publish {
+        height: 100%;
+        width: 2rem;
+        .van-button {
+          border: 0;
+          width: 2rem;
+          height: 100%;
+          border: 0;
+          padding: 0;
+
+          .van-button__content {
+            color: #6ba3d8;
+            font-size: 0.37333rem;
+            position: absolute;
+            left: 30px;
+            top: -10px;
+          }
+        }
+      }
+    }
+    .van-icon {
+      font-size: 0.53333rem;
+      color: rgb(119, 119, 119);
+    }
+  }
+}
 </style>

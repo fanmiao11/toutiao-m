@@ -6,7 +6,9 @@ import {
   setToken,
   getHistory,
   setHistory,
-  removeHistory
+  removeHistory,
+  getId,
+  setId
 } from '@/utils'
 
 Vue.use(Vuex)
@@ -19,7 +21,8 @@ export default new Vuex.Store({
     // user: storage.get('HEIMA_TOUTIAO_TOKEN') || {}
     // 如果不加空对象null.token会报错 加空对象{}.token 返回undefined不报错
     user: getToken() || {},
-    searchHistory: getHistory() || []
+    searchHistory: getHistory() || [],
+    currentArticleId: getId() || ''
   },
 
   // 修改数据的地方
@@ -54,6 +57,11 @@ export default new Vuex.Store({
     deleteAllSearchHistory (state) {
       removeHistory()
       state.searchHistory = []
+    },
+    // 当前文章id
+    setCurrentArticleId (state, payload) {
+      state.currentArticleId = payload
+      setId(state.currentArticleId)
     }
   }
 })

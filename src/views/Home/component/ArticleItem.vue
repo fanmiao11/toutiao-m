@@ -5,14 +5,14 @@
       v-if="articleInfo.cover.type === 0"
       :title="articleInfo.title"
       :label="articleDesc"
-      @click="toArticleDetail"
+      @click="toArticleDetail(articleInfo.art_id)"
     />
     <!-- 一张图片 -->
     <van-cell
       v-if="articleInfo.cover.type === 1"
       :title="articleInfo.title"
       :label="articleDesc"
-      @click="toArticleDetail"
+      @click="toArticleDetail(articleInfo.art_id)"
     >
       <!-- 默认插槽 -->
       <van-image
@@ -25,7 +25,7 @@
     <van-cell
       v-if="articleInfo.cover.type === 3"
       :title="articleInfo.title"
-      @click="toArticleDetail"
+      @click="toArticleDetail(articleInfo.art_id)"
     >
       <template #label>
         <!-- 图片 -->
@@ -63,9 +63,10 @@ export default {
   },
   methods: {
     // 点击跳转到新闻详情
-    toArticleDetail () {
+    toArticleDetail (id) {
       // console.log(111)
       this.$router.push('/detail')
+      this.$store.commit('setCurrentArticleId', id)
     }
   }
 }

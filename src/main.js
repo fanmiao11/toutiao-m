@@ -3,9 +3,6 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 
-
-
-
 // 加载动态设置 REM 基准值
 import 'amfe-flexible'
 
@@ -14,6 +11,9 @@ import '@/styles/index.less'
 
 // 引入字体图标
 import '@/assets/fonts/iconfont.css'
+
+// 引入markdown样式
+import '@/css/news.css'
 
 // 加载Vant核心组件
 import Vant from 'vant'

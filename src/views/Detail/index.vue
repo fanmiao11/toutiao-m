@@ -93,7 +93,7 @@
 </template>
 
 <script>
-import { getArticleDetail, getComment } from '@/api'
+import { getArticleDetail, getComment, followUser, delfollowUser } from '@/api'
 import dayjs from '@/utils/dayjs'
 import commItem from './components/commItem.vue'
 
@@ -120,7 +120,8 @@ export default {
 
       isFollowed: false, // 是否关注了该作者
       isCollected: false, // 是否收藏了该文章
-      attitude: -1 // 用户对文章的态度 -1无态度 0不喜欢 1点赞
+      attitude: -1, // 用户对文章的态度 -1无态度 0不喜欢 1点赞
+      aut_id: '' // 文章作者id
     }
   },
 
@@ -141,7 +142,7 @@ export default {
       const {
         data: { data }
       } = await getArticleDetail(this.currentArticleId)
-      // console.log(data)
+      console.log(data)
       this.articleDetail = data
       // 处理显示文章发布时间
       this.articleDetail.pubdate = dayjs(this.articleDetail.pubdate).fromNow()
@@ -151,6 +152,8 @@ export default {
       this.isCollected = this.articleDetail.is_collected
       // 用户对文章的态度
       this.attitude = this.articleDetail.attitude
+      // 作者id
+      this.aut_id = this.articleDetail.aut_id
     } catch (error) {
       console.log(error.message)
     }
@@ -161,10 +164,19 @@ export default {
       this.$router.back()
     },
     // 关注作者
-    isFollow () {
-      this.isFollowed = !this.isFollowed
+    async isFollow () {
       // if(!isFollowed)  +关注
       // if(isFollowed)  取消关注
+      try {
+        if (!this.isFollowed) {
+          await followUser(this.aut_id)
+        } else {
+          await delfollowUser(this.aut_id)
+        }
+        this.isFollowed = !this.isFollowed
+      } catch (e) {
+        console.log(e.message)
+      }
     },
     // 加载评论
     async commOnLoad () {

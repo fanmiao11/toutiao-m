@@ -27,7 +27,7 @@
       </div>
       <!-- 文章内容 -->
       <div
-      id="article-content"
+        id="article-content"
         class="article-content markdown-body"
         v-html="articleDetail.content"
       ></div>
@@ -61,6 +61,7 @@
             maxlength="50"
             placeholder="请输入留言"
             show-word-limit
+            @keyup.enter="publishFn"
           />
           <div class="publish">
             <van-button :disabled="isDisabled" @click="publishFn"
@@ -101,7 +102,8 @@ import {
   likings,
   nolikings,
   collections,
-  delcollections
+  delcollections,
+  postComment
 } from '@/api'
 import dayjs from '@/utils/dayjs'
 import commItem from './components/commItem.vue'
@@ -149,51 +151,51 @@ export default {
   },
 
   async created () {
-    try {
-      // 请求文章详情的数据
-      const {
-        data: { data }
-      } = await getArticleDetail(this.currentArticleId)
-      // console.log(data)
-      this.articleDetail = data
-      // 处理显示文章发布时间
-      this.articleDetail.pubdate = dayjs(this.articleDetail.pubdate).fromNow()
-      // 是否关注了该作者
-      this.isFollowed = this.articleDetail.is_followed
-      // 是否收藏了该文章
-      this.isCollected = this.articleDetail.is_collected
-      // 用户对文章的态度
-      this.attitude = this.articleDetail.attitude
-      // 作者id
-      this.aut_id = this.articleDetail.aut_id
-
-      this.$nextTick(() => {
-        this.imgList = document.getElementById('article-content').querySelectorAll('img')
-        const imgSrc = []
-        this.imgList.forEach((item, index) => {
-          imgSrc.push(item.src)
-          item.onclick = () => {
-            ImagePreview({ images: imgSrc, startPosition: index, closeable: true })
-          }
-        })
-      })
-    } catch (error) {
-      console.log(error.message)
-    }
+    await this.getArticleDetail()
   },
-  mounted () {
-    const imgSrc = []
-    this.imgList.forEach((item) => {
-      imgSrc.push(item.src)
-      item.onclick = () => {
-        ImagePreview(imgSrc)
-      }
-    })
-  },
-
   methods: {
     backPrePage () {
       this.$router.back()
+    },
+    // 获取文章详情
+    async getArticleDetail () {
+      try {
+      // 请求文章详情的数据
+        const {
+          data: { data }
+        } = await getArticleDetail(this.currentArticleId)
+        // console.log(data)
+        this.articleDetail = data
+        // 处理显示文章发布时间
+        this.articleDetail.pubdate = dayjs(this.articleDetail.pubdate).fromNow()
+        // 是否关注了该作者
+        this.isFollowed = this.articleDetail.is_followed
+        // 是否收藏了该文章
+        this.isCollected = this.articleDetail.is_collected
+        // 用户对文章的态度
+        this.attitude = this.articleDetail.attitude
+        // 作者id
+        this.aut_id = this.articleDetail.aut_id
+
+        this.$nextTick(() => {
+          this.imgList = document
+            .getElementById('article-content')
+            .querySelectorAll('img')
+          const imgSrc = []
+          this.imgList.forEach((item, index) => {
+            imgSrc.push(item.src)
+            item.onclick = () => {
+              ImagePreview({
+                images: imgSrc,
+                startPosition: index,
+                closeable: true
+              })
+            }
+          })
+        })
+      } catch (error) {
+        console.log(error.message)
+      }
     },
     // 关注作者
     async isFollow () {
@@ -222,6 +224,7 @@ export default {
           offset: this.offset,
           limit: 10
         })
+        console.log(res)
         if (res.data.data.end_id === res.data.data.last_id) {
           this.finished = true
         }
@@ -241,7 +244,22 @@ export default {
       }
     },
     // 发布评论
-    publishFn () {},
+    async publishFn () {
+      try {
+        const res = await postComment({
+          target: this.currentArticleId,
+          content: this.comm
+        })
+        console.log(res)
+        this.comm = ''
+        this.show = false
+        // this.getArticleDetail()
+        // this.commOnLoad()
+        location.reload(true)
+      } catch (e) {
+        console.log(e.message)
+      }
+    },
     // 收藏文章
     async clickStar () {
       try {

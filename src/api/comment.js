@@ -13,3 +13,12 @@ export const getComment = (params) => {
   })
 }
 
+// 对文章进行评论
+export const postComment = (data) => {
+  return request({
+    url: '/v1_0/comments',
+    method: 'POST',
+    data
+  })
+}
+

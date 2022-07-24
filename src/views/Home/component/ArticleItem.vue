@@ -67,7 +67,6 @@ export default {
       // console.log(111)
       this.$router.push({
         path: `/detail/${id}`
-
       })
       this.$store.commit('setCurrentArticleId', id)
     }

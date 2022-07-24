@@ -16,12 +16,13 @@
           </template>
           <!-- 使用 right-icon 插槽来自定义右侧图标 -->
           <template #right-icon>
-            <van-button round type="info" @click="isFollow">
-              <template #icon v-if="!isFollowed">
+            <van-button round class="follow" v-if="!isFollowed" type="info" @click="isFollow">
+              <template #icon>
                 <van-icon name="plus"></van-icon>
               </template>
-              {{ isFollowed ? '取关' : '关注' }}
+              关注
             </van-button>
+            <van-button round class="notfollow" v-else @click="isFollow"> 已关注 </van-button>
           </template>
         </van-cell>
       </div>
@@ -160,7 +161,7 @@ export default {
     // 获取文章详情
     async getArticleDetail () {
       try {
-      // 请求文章详情的数据
+        // 请求文章详情的数据
         const {
           data: { data }
         } = await getArticleDetail(this.currentArticleId)
@@ -341,9 +342,11 @@ export default {
     }
 
     // 关注按钮
-    .van-button {
+    .van-button{
       width: 2.26667rem;
       height: 0.77333rem;
+    }
+    .van-button .follow {
       color: white;
       background: rgb(50, 150, 250);
       border-color: rgb(50, 150, 250);

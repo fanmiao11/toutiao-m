@@ -176,7 +176,7 @@ export default {
         this.attitude = this.articleDetail.attitude
         // 作者id
         this.aut_id = this.articleDetail.aut_id
-
+        // 文章预览图片
         this.$nextTick(() => {
           this.imgList = document
             .getElementById('article-content')

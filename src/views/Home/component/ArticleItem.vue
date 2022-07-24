@@ -65,7 +65,10 @@ export default {
     // 点击跳转到新闻详情
     toArticleDetail (id) {
       // console.log(111)
-      this.$router.push('/detail')
+      this.$router.push({
+        path: `/detail/${id}`
+
+      })
       this.$store.commit('setCurrentArticleId', id)
     }
   }

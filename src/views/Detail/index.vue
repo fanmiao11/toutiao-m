@@ -5,7 +5,10 @@
       <h1 class="article-title">{{ articleDetail.title }}</h1>
       <div class="user-info">
         <!-- 作者信息 -->
-        <van-cell :icon="articleDetail.aut_photo">
+        <van-cell>
+          <template #icon>
+            <img :src="articleDetail.aut_photo" />
+          </template>
           <template #title>
             <div class="user-name">
               {{ articleDetail.aut_name }}
@@ -16,13 +19,21 @@
           </template>
           <!-- 使用 right-icon 插槽来自定义右侧图标 -->
           <template #right-icon>
-            <van-button round class="follow" v-if="!isFollowed" type="info" @click="isFollow">
+            <van-button
+              round
+              class="follow"
+              v-if="!isFollowed"
+              type="info"
+              @click="isFollow"
+            >
               <template #icon>
                 <van-icon name="plus"></van-icon>
               </template>
               关注
             </van-button>
-            <van-button round class="notfollow" v-else @click="isFollow"> 已关注 </van-button>
+            <van-button round class="notfollow" v-else @click="isFollow">
+              已关注
+            </van-button>
           </template>
         </van-cell>
       </div>
@@ -53,6 +64,7 @@
       <!-- 底部栏 -->
       <div class="article-bottom">
         <van-button round size="mini" @click="show = true">写评论</van-button>
+
         <van-popup v-model="show" position="bottom">
           <van-field
             v-model="comm"
@@ -80,12 +92,10 @@
             name="good-job"
             v-if="attitude === 1"
             color="#f5de19"
-            :badge="articleDetail.like_count"
           />
           <van-icon
             name="good-job-o"
             v-else
-            :badge="articleDetail.like_count"
           />
         </div>
         <van-icon name="share" />
@@ -317,16 +327,12 @@ export default {
   }
   .user-info {
     // 图片
-    .van-cell__left-icon {
+    img {
       width: 0.93333rem;
       height: 0.93333rem;
       margin-right: 0.22667rem;
       overflow: hidden;
       border-radius: 50%;
-      .van-icon__image {
-        width: 100%;
-        height: 100%;
-      }
     }
     .van-cell__title {
       // 作者名
@@ -342,7 +348,7 @@ export default {
     }
 
     // 关注按钮
-    .van-button{
+    .van-button {
       width: 2.26667rem;
       height: 0.77333rem;
     }

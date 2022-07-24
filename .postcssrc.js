@@ -10,12 +10,12 @@ module.exports = {
         // 如果是vant组件 就返回37.5
         // 不是就返回 75
         // 只能转换样式表内的px  不能转换行内样式
-        if(/vant/gi.test(module.file)){
+        // console.log(module);
+        if(/vant/gi.test(module.file) || /news.css/gi.test(module.file)){
           return 37.5
         }else{
           return 75
         }
-        // console.log(module);
         // return 37.5
       },
       // 适配的属性
@@ -23,3 +23,4 @@ module.exports = {
     }
   }
 }
+

@@ -242,8 +242,11 @@ main {
     flex-direction: column;
     align-items: center;
     color: #fff;
+    font-size: .37333rem;
     img {
       margin-bottom: 10px;
+      width: 1.76rem;
+      height: 1.76rem;
     }
   }
 }

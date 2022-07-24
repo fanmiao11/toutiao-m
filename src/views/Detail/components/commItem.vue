@@ -1,5 +1,6 @@
 <template>
   <div>
+    <!-- 评论 -->
     <van-cell>
       <template #icon>
         <img :src="comm.aut_photo" />
@@ -10,9 +11,9 @@
         <div class="comm_bottom">
           <div class="comm_pubdate">{{ pubdate }}</div>
           <div class="reply_btn">
-            <van-button size="mini" round
-              >回复 {{ comm.reply_count }}</van-button
-            >
+            <van-button size="mini" round @click="showReplay">
+              回复 {{ comm.reply_count }}
+            </van-button>
           </div>
         </div>
       </template>
@@ -20,20 +21,38 @@
         <van-button class="good-btn">
           <van-icon name="good-job-o" />
           <span>
-            {{ comm.like_count==0 ? '赞' : comm.like_count }}
+            {{ comm.like_count == 0 ? '赞' : comm.like_count }}
           </span>
         </van-button>
       </template>
     </van-cell>
+    <!-- 回复 -->
+    <van-popup v-model="isShowReplay" closeable position="bottom" :style="{ height: '100%' }">
+      <reply :comm="comm"></reply>
+    </van-popup>
   </div>
 </template>
 
 <script>
 import dayjs from '@/utils/dayjs'
+import reply from './reply.vue'
 export default {
+  data () {
+    return {
+      isShowReplay: false
+    }
+  },
+  components: {
+    reply
+  },
   props: {
     comm: {
       type: Object
+    }
+  },
+  methods: {
+    showReplay () {
+      this.isShowReplay = true
     }
   },
   computed: {
@@ -86,9 +105,8 @@ export default {
       }
     }
   }
-  .good-btn{
+  .good-btn {
     border: unset;
   }
-
 }
 </style>

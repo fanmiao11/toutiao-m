@@ -22,3 +22,26 @@ export const postComment = (data) => {
   })
 }
 
+// 对评论或评论回复进行点赞
+/**
+ *
+ * @param {String} target  评论id
+ * @returns Promise
+ */
+export const likingsComment = (target) => {
+  return request({
+    url: '/v1_0/comment/likings',
+    method: 'POST',
+    data: {
+      target
+    }
+  })
+}
+// 取消对评论或评论回复点赞
+export const nolikingsComment = (target) => {
+  return request({
+    url: `/v1_0/comment/likings/${target}`,
+    method: 'DELETE'
+  })
+}
+

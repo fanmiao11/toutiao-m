@@ -21,8 +21,16 @@
           </div>
         </div>
       </template>
-      <template #right-icon>
-        <van-button class="good-btn">
+      <template #right-icon v-if="comm.is_liking">
+        <van-button class="good-btn" @click="likeComment(comm)">
+          <van-icon name="good-job" />
+          <span>
+            {{ comm.like_count == 0 ? '赞' : comm.like_count }}
+          </span>
+        </van-button>
+      </template>
+      <template #right-icon v-else>
+        <van-button class="good-btn" @click="likeComment(comm)">
           <van-icon name="good-job-o" />
           <span>
             {{ comm.like_count == 0 ? '赞' : comm.like_count }}
@@ -59,8 +67,16 @@
               </div>
             </div>
           </template>
-          <template #right-icon>
-            <van-button class="good-btn">
+          <template #right-icon v-if="item.is_liking">
+            <van-button class="good-btn" @click="likeComment(item)">
+              <van-icon name="good-job" />
+              <span>
+                {{ item.like_count == 0 ? '赞' : item.like_count }}
+              </span>
+            </van-button>
+          </template>
+          <template #right-icon v-else>
+            <van-button class="good-btn" @click="likeComment(item)">
               <van-icon name="good-job-o" />
               <span>
                 {{ item.like_count == 0 ? '赞' : item.like_count }}
@@ -99,7 +115,13 @@
 
 <script>
 import dayjs from '@/utils/dayjs'
-import { getComment, postComment } from '@/api'
+import {
+  getComment,
+  postComment,
+  likingsComment,
+  nolikingsComment
+} from '@/api'
+
 import writeComm from './writeComm.vue'
 export default {
   data () {
@@ -108,10 +130,10 @@ export default {
       finished: false,
       replyList: [],
       offset: '',
-      total_count: 0,
+
       writeCommShow: false,
       commContent: ''
-    //   isDisabled: true
+      //   isDisabled: true
     }
   },
   props: {
@@ -138,7 +160,7 @@ export default {
         })
         this.offset = data.last_id || ''
         console.log(data)
-        this.total_count = data.total_count
+        // this.total_count = data.total_count
         this.replyList.push(...data.results.filter(() => Boolean))
         if (data.end_id === data.last_id) {
           this.finished = true
@@ -171,6 +193,23 @@ export default {
     },
     pubdate (value) {
       return dayjs(value).fromNow()
+    },
+
+    async likeComment (item) {
+      try {
+        if (item.is_liking) {
+          await nolikingsComment(item.com_id)
+          // console.log(res);
+          item.like_count--
+        } else {
+          await likingsComment(item.com_id)
+          // console.log(res);
+          item.like_count++
+        }
+        item.is_liking = !item.is_liking
+      } catch (e) {
+        console.log(e)
+      }
     }
   },
   computed: {
@@ -181,6 +220,9 @@ export default {
       } else {
         return false
       }
+    },
+    total_count () {
+      return this.replyList.length
     }
   }
 }
@@ -254,7 +296,7 @@ export default {
     }
   }
   //   评论按钮
- /deep/ .van-popup {
+  /deep/ .van-popup {
     padding: 0.42667rem 0 0.42667rem 0.42667rem;
     display: flex;
     align-items: center;

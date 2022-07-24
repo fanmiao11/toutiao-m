@@ -17,8 +17,16 @@
           </div>
         </div>
       </template>
-      <template #right-icon>
-        <van-button class="good-btn">
+      <template #right-icon v-if="comm.is_liking">
+        <van-button class="good-btn" @click="likeComment(comm)">
+          <van-icon name="good-job" />
+          <span>
+            {{ comm.like_count == 0 ? '赞' : comm.like_count }}
+          </span>
+        </van-button>
+      </template>
+      <template #right-icon v-else>
+        <van-button class="good-btn" @click="likeComment(comm)">
           <van-icon name="good-job-o" />
           <span>
             {{ comm.like_count == 0 ? '赞' : comm.like_count }}
@@ -27,7 +35,12 @@
       </template>
     </van-cell>
     <!-- 回复 -->
-    <van-popup v-model="isShowReplay" closeable position="bottom" :style="{ height: '100%' }">
+    <van-popup
+      v-model="isShowReplay"
+      closeable
+      position="bottom"
+      :style="{ height: '100%' }"
+    >
       <reply :comm="comm"></reply>
     </van-popup>
   </div>
@@ -36,6 +49,7 @@
 <script>
 import dayjs from '@/utils/dayjs'
 import reply from './reply.vue'
+import { likingsComment, nolikingsComment } from '@/api'
 export default {
   data () {
     return {
@@ -53,6 +67,24 @@ export default {
   methods: {
     showReplay () {
       this.isShowReplay = true
+    },
+    // 评论点赞
+
+    async likeComment (item) {
+      try {
+        if (this.comm.is_liking) {
+          await nolikingsComment(item.com_id)
+          // console.log(res);
+          item.like_count--
+        } else {
+          await likingsComment(item.com_id)
+          // console.log(res);
+          item.like_count++
+        }
+        item.is_liking = !item.is_liking
+      } catch (e) {
+        console.log(e)
+      }
     }
   },
   computed: {

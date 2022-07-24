@@ -88,17 +88,16 @@
           <van-icon name="star-o" v-else />
         </div>
         <div @click="clickGood">
-          <van-icon
-            name="good-job"
-            v-if="attitude === 1"
-            color="#f5de19"
-          />
-          <van-icon
-            name="good-job-o"
-            v-else
-          />
+          <van-icon name="good-job" v-if="attitude === 1" color="#f5de19" />
+          <van-icon name="good-job-o" v-else />
         </div>
-        <van-icon name="share" />
+        <van-icon name="share" @click="showShare = true" />
+        <van-share-sheet
+          class="show-share"
+          v-model="showShare"
+          title="立即分享给好友"
+          :options="options"
+        />
       </div>
     </div>
   </div>
@@ -146,7 +145,26 @@ export default {
       attitude: -1, // 用户对文章的态度 -1无态度 0不喜欢 1点赞
       aut_id: '', // 文章作者id
 
-      imgList: []
+      imgList: [],
+
+      showShare: false, // 分享面板展示状态
+      options: [
+        [
+          { name: '微信', icon: 'wechat' },
+          { name: '朋友圈', icon: 'wechat-moments' },
+          { name: '微博', icon: 'weibo' },
+          { name: 'QQ', icon: 'qq' }
+        ],
+        [
+          { name: '复制链接', icon: 'link' },
+          { name: '分享海报', icon: 'poster' },
+          {
+            name: '二维码',
+            icon: 'qrcode'
+          },
+          { name: '小程序码', icon: 'weapp-qrcode' }
+        ]
+      ] // 分享选项
     }
   },
 
@@ -384,6 +402,11 @@ export default {
         color: #a7a7a7;
       }
     }
+    /deep/.show-share {
+      flex-direction: column;
+      padding: unset !important;
+    }
+
     /deep/.van-popup {
       padding: 0.42667rem 0 0.42667rem 0.42667rem;
       display: flex;

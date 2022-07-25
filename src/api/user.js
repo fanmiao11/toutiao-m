@@ -61,3 +61,33 @@ export const delfollowUser = (target) => {
     method: 'DELETE'
   })
 }
+
+export const getUser = () => {
+  return request({
+    url: '/v1_0/user/profile'
+
+  })
+}
+
+// 编辑用户个人资料
+export const editUser = (data) => {
+  return request({
+    url: '/v1_0/user/profile',
+    method: 'PATCH',
+    data
+  })
+}
+
+// 上传用户头像
+/**
+ *
+ * @param {file} photo 上传头像
+ * @returns Promise
+ */
+export const updatePhoto = (photo) => {
+  return request({
+    url: '/v1_0/user/photo',
+    method: 'PATCH',
+    data: photo
+  })
+}

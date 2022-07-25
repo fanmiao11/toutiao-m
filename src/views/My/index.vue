@@ -27,7 +27,7 @@
               align="center"
               justify="end"
             >
-              <van-button class="edit-btn"> 编辑资料 </van-button>
+              <van-button class="edit-btn" @click="editFn"> 编辑资料 </van-button>
             </van-row>
           </van-col>
         </van-row>
@@ -144,6 +144,10 @@ export default {
           this.$toast.fail('请重新登录~')
         }
       }
+    },
+    // 编辑资料
+    editFn () {
+      this.$router.push('/user')
     }
   }
 }

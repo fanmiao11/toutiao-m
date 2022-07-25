@@ -118,6 +118,7 @@ import {
 import dayjs from '@/utils/dayjs'
 import commItem from './components/commItem.vue'
 import { ImagePreview } from 'vant'
+// import 'markdown-it/dist/markdown-it.js'
 
 export default {
   components: {
@@ -284,7 +285,8 @@ export default {
         this.show = false
         // this.getArticleDetail()
         // this.commOnLoad()
-        location.reload(true)
+        // location.reload(true)
+        this.commList.unshift(res.data.data.new_obj)
       } catch (e) {
         console.log(e.message)
       }

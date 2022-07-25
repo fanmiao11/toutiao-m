@@ -43,6 +43,11 @@ const routes = [
   {
     path: '/detail/:id',
     component: () => import('@/views/Detail')
+  },
+  // 编辑资料
+  {
+    path: '/user',
+    component: () => import('@/views/User')
   }
 ]
 

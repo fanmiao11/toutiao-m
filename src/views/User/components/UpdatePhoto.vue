@@ -27,13 +27,23 @@ export default {
       multipart/form-data
     */
     confirm () {
-      const fm = new FormData()
-      this.myCropper.getCroppedCanvas().toBlob(async (blob) => {
-        fm.append('photo', blob)
-        const res = await updatePhoto(fm)
-        // 返回数据拿到图片地址返回给父组件进行页面渲染
-        this.$emit('updateAvator', res.data.data.photo)
-      })
+      try {
+        this.$toast.loading({
+          message: '上传中...',
+          forbidClick: true, // 是否禁止背景点击
+          duration: 0 // 展示时长 为0时不会消失
+        })
+        const fm = new FormData()
+        this.myCropper.getCroppedCanvas().toBlob(async (blob) => {
+          fm.append('photo', blob)
+          const res = await updatePhoto(fm)
+          // 返回数据拿到图片地址返回给父组件进行页面渲染
+          this.$emit('updateAvator', res.data.data.photo)
+          this.$toast.success('头像上传成功')
+        })
+      } catch (e) {
+        console.log(e.message)
+      }
     },
     cancel () {
       this.$emit('cancelAvator')

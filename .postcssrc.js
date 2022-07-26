@@ -11,7 +11,7 @@ module.exports = {
         // 不是就返回 75
         // 只能转换样式表内的px  不能转换行内样式
         // console.log(module);
-        if(/vant/gi.test(module.file) || /news.css/gi.test(module.file)){
+        if(/vant/gi.test(module.file) || /github-markdown/gi.test(module.file)){
           return 37.5
         }else{
           return 75
@@ -19,8 +19,9 @@ module.exports = {
         // return 37.5
       },
       // 适配的属性
-      propList: ['*']
-    }
+      propList: ['*'],
+     
+    },
   }
 }
 

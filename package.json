@@ -13,6 +13,7 @@
     "core-js": "^3.8.3",
     "cropperjs": "^1.5.12",
     "dayjs": "^1.11.3",
+    "github-markdown-css": "^5.1.0",
     "markdown-it": "^13.0.1",
     "vant": "^2.12.48",
     "vue": "^2.6.14",

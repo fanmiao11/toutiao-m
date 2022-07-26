@@ -119,6 +119,7 @@ import dayjs from '@/utils/dayjs'
 import commItem from './components/commItem.vue'
 import { ImagePreview } from 'vant'
 // import 'markdown-it/dist/markdown-it.js'
+// import 'github-markdown-css'
 
 export default {
   components: {
@@ -327,6 +328,9 @@ export default {
 </script>
 
 <style lang="less" scoped>
+@import 'github-markdown-css/github-markdown-light.css';
+// @import 'github-markdown';
+
 /deep/.van-nav-bar {
   background-color: #3296fa;
   .van-icon,

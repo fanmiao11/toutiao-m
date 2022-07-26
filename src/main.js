@@ -13,7 +13,7 @@ import '@/styles/index.less'
 import '@/assets/fonts/iconfont.css'
 
 // 引入markdown样式
-import '@/css/news.css'
+// import '@/css/news.css'
 
 // 加载Vant核心组件
 import Vant from 'vant'

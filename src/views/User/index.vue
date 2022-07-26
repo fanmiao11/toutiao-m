@@ -9,11 +9,14 @@
         <van-image width="30" height="30" round :src="userInfo.photo" />
       </van-cell>
       <!-- 裁剪头像 -->
-      <van-popup v-model="showavator" id="cutImg">
+      <van-popup v-model="showavator" class="cutImg">
         <!-- 用组件进行图片裁剪 -->
-        <UpdatePhoto :photo="photo" @updateAvator="updateAvator"></UpdatePhoto>
-
-        <!-- <img :src="photo" alt="" ref="img" /> -->
+        <UpdatePhoto
+          v-if="showavator"
+          :photo="photo"
+          @updateAvator="updateAvator"
+          @cancelAvator="cancalAvator"
+        ></UpdatePhoto>
       </van-popup>
 
       <!-- 更新用户昵称 -->
@@ -79,8 +82,6 @@
 <script>
 import { getUser, editUser } from '@/api'
 import dayjs from '@/utils/dayjs'
-// import Cropper from 'cropperjs'
-import 'cropperjs/dist/cropper.css'
 import UpdatePhoto from './components/UpdatePhoto.vue'
 export default {
   components: {
@@ -89,26 +90,16 @@ export default {
   data () {
     return {
       userInfo: {}, // 用户资料
-
-      showavator: false,
-      shownickname: false,
-      showsex: false,
-      showbir: false,
-
-      // 头像
-      photo: '',
-      myCropper: '',
-
-      //   昵称
-      nickname: '',
-
-      //   性别
-      columns: ['男', '女'],
-
-      //   生日
-      minDate: new Date(2020, 0, 1),
-      maxDate: new Date(2025, 10, 1),
-      currentDate: new Date(2021, 0, 17)
+      showavator: false, // 头像弹出层
+      shownickname: false, // 昵称弹出层
+      showsex: false, // 性别弹出层
+      showbir: false, // 生日弹出层
+      photo: '', // 头像
+      nickname: '', // 昵称
+      columns: ['男', '女'], // 性别
+      minDate: new Date(1990, 1, 1), // 生日范围
+      maxDate: new Date(),
+      currentDate: new Date() // 当前日期
     }
   },
   async created () {
@@ -124,45 +115,38 @@ export default {
       const file = e.target.files[0]
       // file = URL.createObjectURL(file)
       // this.photo = file
-
-      // this.showavator = true
-
-      // console.log(this.$refs)
-      // console.log(this.$refs.img)
-
       const fr = new FileReader()
       fr.readAsDataURL(file)
       // 读取完成后，result属性将返回一个 Data URL 格式（Base64编码）的字符串，代表文件内容
-
       fr.onload = (e) => {
         // load事件（读取操作完成）的监听函数，通常在这个函数里面使用result属性，拿到文件内容。
         // console.log(e.target.result);
-        this.showavator = true
         this.photo = e.target.result
         // 拿到图片base64编码格式 打开剪切头像的弹出层  photo作为弹出层显示图片的路径
-        // console.log(this.$refs.img)
-        // const img = document.getElementById('cutImg')
-        // console.log(img);
-        // this.myCropper = new Cropper(img, {})
+        this.showavator = true
       }
+      this.$refs.file.value = ''
     })
   },
   methods: {
     backPrePage () {
       this.$router.back()
     },
+    // 修改头像
     updateAvator (photo) {
+      // console.log(photo)
       this.showavator = false
-      console.log(photo)
       this.userInfo.photo = photo
     },
-
+    // 取消修改头像
+    cancalAvator () {
+      this.showavator = false
+    },
     async onConfirm (value, index) {
       // 选择性别
       try {
         if (this.userInfo.gender !== index) {
-          const res = await editUser({ gender: index })
-          console.log(res)
+          await editUser({ gender: index })
           this.userInfo.gender = index
         }
         this.showsex = false
@@ -174,8 +158,7 @@ export default {
       // 保存昵称
       try {
         if (this.nickname !== this.userInfo.name && this.nickname !== '') {
-          const res = await editUser({ name: this.nickname })
-          console.log(res)
+          await editUser({ name: this.nickname })
           this.userInfo.name =
             this.nickname === '' ? this.userInfo.name : this.nickname
         }
@@ -186,18 +169,15 @@ export default {
     },
     async checkbir (value) {
       // 选择生日
-      // console.log(dayjs(value).format('YYYY-MM-DD'));
       try {
-        if (dayjs(value).format('YYYY-MM-DD') !== this.userInfo.birthday) {
-          const res = await editUser({
-            birthday: dayjs(value).format('YYYY-MM-DD')
-          })
-          console.log(res)
-          this.userInfo.birthday = dayjs(value).format('YYYY-MM-DD')
-          this.showbir = false
+        const birthday = dayjs(value).format('YYYY-MM-DD')
+        if (birthday !== this.userInfo.birthday) {
+          await editUser({ birthday })
+          this.userInfo.birthday = birthday
         }
+        this.showbir = false
       } catch (e) {
-        console.log(e)
+        console.log(e.message)
       }
     }
   }
@@ -224,5 +204,9 @@ export default {
       color: black;
     }
   }
+}
+.cutImg {
+  height: 100%;
+  width: 100%;
 }
 </style>

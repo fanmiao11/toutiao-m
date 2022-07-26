@@ -44,7 +44,9 @@
         v-html="articleDetail.content"
       ></div>
       <!-- 正文结束 -->
-      <van-divider>正文结束</van-divider>
+      <div id="contentEnd">
+        <van-divider>正文结束</van-divider>
+      </div>
       <!-- 评论 -->
       <van-list
         v-model="loading"
@@ -82,7 +84,7 @@
             >
           </div>
         </van-popup>
-        <van-icon name="comment-o" :badge="articleDetail.comm_count" />
+        <van-icon name="comment-o" :badge="articleDetail.comm_count" @click="focusCommentArea" />
         <div @click="clickStar">
           <van-icon name="star" color="#f5de19" v-if="isCollected" />
           <van-icon name="star-o" v-else />
@@ -321,6 +323,12 @@ export default {
       } catch (e) {
         console.log(e.message)
         this.$toast.fail('操作失败')
+      }
+    },
+    focusCommentArea () {
+      const contentEnd = document.getElementById('contentEnd')
+      if (contentEnd) {
+        contentEnd.scrollIntoView({ behavior: 'smooth', block: 'center' })
       }
     }
   }

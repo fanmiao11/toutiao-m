@@ -57,7 +57,9 @@
           show-toolbar
           :columns="columns"
           @confirm="onConfirm"
-          @cancel="showsex = false"
+          @cancel="onCancel"
+          :default-index="userInfo.gender"
+          ref="picker"
         />
       </van-popup>
       <!-- 生日 -->
@@ -107,6 +109,8 @@ export default {
     const res = await getUser()
     console.log(res)
     this.userInfo = res.data.data
+    this.nickname = this.userInfo.name
+    this.currentDate = new Date(this.userInfo.birthday)
   },
   mounted () {
     // 监听input的change事件  拿到用户选择的图片
@@ -128,6 +132,7 @@ export default {
       this.$refs.file.value = ''
     })
   },
+
   methods: {
     backPrePage () {
       this.$router.back()
@@ -153,6 +158,12 @@ export default {
       } catch (e) {
         console.log(e.message)
       }
+    },
+    onCancel (value, index) {
+      console.log(value, index)
+      this.showsex = false
+      // 取消选择的时候修改当前选中值
+      this.$refs.picker.setColumnIndex(0, this.userInfo.gender)
     },
     async saveFn () {
       // 保存昵称
